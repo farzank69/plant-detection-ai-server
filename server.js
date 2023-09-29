@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require('cors');
 const path = require('path'); // Import the path module
+const image = require('./controllers/detect')
 
 const app = express();
 const multer = require('multer');
@@ -21,16 +22,21 @@ const upload = multer({ storage });
 
 // Serve static files (if needed)
 app.use(express.static('public'));
+app.use('/uploads', express.static('uploads'));
 
 // Handle file upload
 app.post('/upload', upload.single('file'), (req, res) => {
+    console.log(req.file.filename)
+    
     if (!req.file) {
         return res.status(400).json({ error: 'No file uploaded.' });
     }
 
     // File was uploaded successfully
-    res.json({ message: 'File uploaded successfully.' });
+    res.json(req.file.filename);
 });
+
+// app.get('/uploads', )
 
 app.post("/detect", (req, res) => { image.handleApiCall(req, res) })
 
