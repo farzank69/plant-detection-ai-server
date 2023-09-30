@@ -1,16 +1,46 @@
 const request = require('request');
 
-const handleApiCall = (req, res) => {
+const handleCaptureApiCall = (req, res) => {
     const pythonCode = "print('Hello, Python!')"; // Replace with your Python code
 
     const data = {
         code: pythonCode,
         imgName: req.body,
     };
+    console.log(req.body)
 
     request.post(
         {
-            url: 'http://192.168.97.104:5000/api/process_image', // Adjust the URL to your Flask API endpoint
+            url: 'http://192.168.56.1:5000/api/process_capture', // Adjust the URL to your Flask API endpoint
+            json: data,
+        },
+        (error, response, body) => {
+            if (error) {
+                console.error('An error occurred while making the request:', error);
+                res.status(500).json({ error: 'An error occurred while making the request' });
+            } else if (response.statusCode === 200) {
+                res.json(body); // Send the response from the Flask server as-is
+                console.log(body);
+            } else {
+                console.error('Request failed with status code:', response.statusCode);
+                res.status(response.statusCode).json({ error: 'Request failed' });
+            }
+        }
+    );
+};
+
+const handleSubmitApiCall = (req, res) => {
+    const pythonCode = "print('Hello, Python!')"; // Replace with your Python code
+
+    const data = {
+        code: pythonCode,
+        imgName: req.body,
+        imgUrl: req.body,
+    };
+
+    request.post(
+        {
+            url: 'http://192.168.56.1:5000/api/process_submit', // Adjust the URL to your Flask API endpoint
             json: data,
         },
         (error, response, body) => {
@@ -29,7 +59,8 @@ const handleApiCall = (req, res) => {
 };
 
 module.exports = {
-    handleApiCall,
+    handleSubmitApiCall,
+    handleCaptureApiCall,
 };
 
 
